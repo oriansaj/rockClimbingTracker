@@ -10,3 +10,30 @@ body {
 .page-container {
     margin-top: 75px;
 }
+
+#inProgressDot {
+    display: inline;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+#menuBar {
+    width: 100%;
+    padding: 5px 20px;
+    background-color: #800000;
+    color: white;
+    position: fixed;
+    bottom: 0;
+}
+
+#toAllRoutes,
+#toMyRoutes,
+#toMyStats {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline;
+}
+
+#toMyRoutes {
+    margin-left: auto;
+}
