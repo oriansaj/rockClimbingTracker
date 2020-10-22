@@ -11,10 +11,10 @@ body {
     margin-top: 75px;
 }
 
-#inProgressDot {
-    display: inline;
-    margin-left: auto;
-    margin-right: 10px;
+.card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 100%;
 }
 
 #menuBar {
@@ -31,6 +31,19 @@ body {
 #toAllRoutes,
 #toMyRoutes,
 #toMyStats {
-    margin: 0 5em;
+    margin: 0 5vw;
     display: inline;
+    font-size: 1rem;
+}
+
+#inProgressDot {
+    display: inline-block;
+    margin-left: auto;
+    max-width: 5em;
+    max-height: 5em;
+}
+
+.card-title {
+    /* display: inline; */
+    margin: auto auto auto 0;
 }
