@@ -24,16 +24,13 @@ body {
     color: white;
     position: fixed;
     bottom: 0;
+    text-align: center;
+    padding: 15px;
 }
 
 #toAllRoutes,
 #toMyRoutes,
 #toMyStats {
-    margin-left: 10px;
-    margin-right: 10px;
+    margin: 0 5em;
     display: inline;
-}
-
-#toMyRoutes {
-    margin-left: auto;
 }
