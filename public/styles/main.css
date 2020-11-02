@@ -54,3 +54,32 @@ body {
     left: -128px;
     will-change: top, left;
 }
+
+#fab {
+    position: fixed;
+    right: 10px;
+    bottom: 60px;
+    background-color: #800000;
+    color: white;
+    z-index: 999;
+}
+
+#fab:active {
+    transform: translateY(2px);
+    opacity: 0.8;
+}
+
+#inputName,
+#inputDifficulty,
+#inputLocation {
+    background-image: linear-gradient(0deg, #800000 2px, rgba(0, 150, 136, 0) 0), linear-gradient(0deg, rgba(0, 0, 0, .26) 1px, transparent 0);
+}
+
+.is-focused [class*=" bmd-label"],
+.is-focused [class^=bmd-label] {
+    color: #800000;
+}
+
+#submitAddRoute {
+    color: #800000;
+}
