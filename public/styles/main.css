@@ -13,7 +13,7 @@ body {
 
 .card-body {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 10fr 1fr;
     grid-template-rows: 100%;
 }
 
@@ -46,4 +46,11 @@ body {
 .card-title {
     /* display: inline; */
     margin: auto auto auto 0;
+}
+
+.dropdown-menu-right {
+    position: absolute;
+    top: 32px;
+    left: -128px;
+    will-change: top, left;
 }
