@@ -94,19 +94,21 @@ rhit.ListPageController = class {
 			rhit.fbAuthManager.signOut();
 		});
 
-		// document.querySelector("#submitAddPhoto").addEventListener("click", (event) => {
-		// 	const url = document.querySelector("#inputUrl").value;
-		// 	const caption = document.querySelector("#inputCaption").value;
-		// 	rhit.fbPhotoBucketManager.add(url, caption);
-		// });
+		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
+			const name = document.querySelector("#inputName").value;
+			const difficulty = document.querySelector("#inputDifficulty").value;
+			const location = document.querySelector("#inputLocation").value;
+			rhit.fbRoutesManager.add(name, difficulty, location);
+		});
 
-		// $("#addPhotoDialog").on("show.bs.modal", (event) => {
-		// 	document.querySelector("#inputUrl").value = "";
-		// 	document.querySelector("#inputCaption").value = "";
-		// });
-		// $("#addPhotoDialog").on("shown.bs.modal", (event) => {
-		// 	document.querySelector("#inputUrl").focus();
-		// });
+		$("#addRouteDialog").on("show.bs.modal", (event) => {
+			document.querySelector("#inputName").value = "";
+			document.querySelector("#inputDifficulty").value = "";
+			document.querySelector("#inputLocation").value = "";
+		});
+		$("#addPhotoDialog").on("shown.bs.modal", (event) => {
+			document.querySelector("#inputName").focus();
+		});
 
 		rhit.fbRoutesManager.beginListening(this.updateList.bind(this));
 	}

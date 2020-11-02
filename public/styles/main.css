@@ -11,13 +11,17 @@ body {
     margin-top: 75px;
 }
 
+.card {
+    margin: 10px 0;
+}
+
 .card-body {
     display: grid;
     grid-template-columns: 10fr 1fr;
     grid-template-rows: 100%;
 }
 
-.page-container {
+#loginPage {
     justify-content: center;
     text-align: center;
 }
