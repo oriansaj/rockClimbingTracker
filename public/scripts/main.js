@@ -187,8 +187,109 @@ rhit.FbRoutesManager = class {
 	}
 	getRouteAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		const route = new rhit.Route(docSnapshot.id, docSnapshot.get(rhit.FB_KEY_NAME), docSnapshot.get(rhit.FB_KEY_DIFFICULTY), docSnapshot.get(rhit.FB_KEY_LOCATION));
+		const route = new rhit.Route(docSnapshot.id, docSnapshot.get(rhit.FB_KEY_NAME), null);
 		return route;
+	}
+}
+
+rhit.DetailPageController = class {
+	constructor() {
+		// document.querySelector("#submitEditPhoto").addEventListener("click", (event) => {
+		// 	const caption = document.querySelector("#inputCaption").value;
+		// 	rhit.fbSinglePhotoManager.update(caption);
+		// });
+
+		// $("#editPhotoDialog").on("show.bs.modal", (event) => {
+		// 	document.querySelector("#inputCaption").value = rhit.fbSinglePhotoManager.caption;
+		// });
+		// $("#editPhotoDialog").on("shown.bs.modal", (event) => {
+		// 	document.querySelector("#inputCaption").focus();
+		// });
+
+		// document.querySelector("#submitDeletePhoto").addEventListener("click", (event) => {
+		// 	rhit.fbSinglePhotoManager.delete().then(() => {
+		// 		console.log("Document successfully deleted!");
+		// 		window.location.href = "/list.html";
+		// 	}).catch((error) => {
+		// 		console.log("Error removing document: ", error);
+		// 	});
+		// });
+		document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
+			window.location.href = "/list.html";
+		});
+		document.querySelector("#toMyRoutes").addEventListener("click", (event) => {
+			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+		});
+		document.querySelector("#toMyStats").addEventListener("click", (event) => {
+			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+
+		rhit.fbSingleRouteManager.beginListening(this.updateView.bind(this));
+	}
+
+	updateView() {
+		document.querySelector("#name").innerHTML = rhit.fbSingleRouteManager.name;
+		document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
+		document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
+		document.querySelector("#privateDetails").hidden = true;
+
+		// if (rhit.fbSinglePhotoManager.author == rhit.fbAuthManager.uid) {
+		// 	document.querySelector("#menuEdit").style.display = "flex";
+		// 	document.querySelector("#menuDelete").style.display = "flex";
+		// }
+	}
+}
+
+rhit.FbSingleRouteManager = class {
+	constructor(routeId) {
+		this._documentSnapshot = {};
+		this._unsubscribe = null;
+		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_ROUTES).doc(routeId);
+	}
+	beginListening(changeListener) {
+		this._unsubscribe = this._ref.onSnapshot((doc) => {
+			if (doc.exists) {
+				this._documentSnapshot = doc;
+				changeListener();
+			} else {
+
+			}
+		});
+	}
+	stopListening() {
+		this._unsubscribe();
+	}
+
+	// update(caption) {
+	// 	this._ref.update({
+	// 			[rhit.FB_KEY_CAPTION]: caption,
+	// 			[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
+	// 		})
+	// 		.then(() => {
+	// 			console.log("Document successfully updated!");
+	// 		})
+	// 		.catch((error) => {
+	// 			console.error("Error updating document: ", error);
+	// 		});
+	// }
+
+	delete() {
+		return this._ref.delete();
+	}
+
+	get name() {
+		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+	}
+
+	get location() {
+		return this._documentSnapshot.get(rhit.FB_KEY_LOCATION);
+	}
+
+	get difficulty() {
+		return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
 	}
 }
 
@@ -215,15 +316,15 @@ rhit.initializePage = function () {
 		new rhit.ListPageController();
 	}
 
-	// if (document.querySelector("#detailPage")) {
-	// 	const urlParams = new URLSearchParams(window.location.search);
-	// 	const photoId = urlParams.get("id");
-	// 	if (!photoId) {
-	// 		window.location.href = "/";
-	// 	}
-	// 	rhit.fbSinglePhotoManager = new rhit.FbSinglePhotoManager(photoId);
-	// 	new rhit.DetailPageController();
-	// }
+	if (document.querySelector("#detailPage")) {
+		const urlParams = new URLSearchParams(window.location.search);
+		const routeId = urlParams.get("id");
+		if (!routeId) {
+			window.location.href = "/";
+		}
+		rhit.fbSingleRouteManager = new rhit.FbSingleRouteManager(routeId);
+		new rhit.DetailPageController();
+	}
 }
 
 /* Main */
