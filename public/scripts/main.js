@@ -196,26 +196,22 @@ rhit.FbRoutesManager = class {
 
 rhit.DetailPageController = class {
 	constructor() {
-		// document.querySelector("#submitEditPhoto").addEventListener("click", (event) => {
-		// 	const caption = document.querySelector("#inputCaption").value;
-		// 	rhit.fbSinglePhotoManager.update(caption);
-		// });
+		document.querySelector("#submitEditRoute").addEventListener("click", (event) => {
+			const name = document.querySelector("#inputName").value;
+			const difficulty = document.querySelector("#inputDifficulty").value;
+			const location = document.querySelector("#inputLocation").value;
+			rhit.fbSingleRouteManager.update(name, difficulty, location);
+		});
 
-		// $("#editPhotoDialog").on("show.bs.modal", (event) => {
-		// 	document.querySelector("#inputCaption").value = rhit.fbSinglePhotoManager.caption;
-		// });
-		// $("#editPhotoDialog").on("shown.bs.modal", (event) => {
-		// 	document.querySelector("#inputCaption").focus();
-		// });
+		$("#editRouteDialog").on("show.bs.modal", (event) => {
+			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
+			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
+			document.querySelector("#inputLocation").value = rhit.fbSingleRouteManager.location;
+		});
+		$("#editRouteDialog").on("shown.bs.modal", (event) => {
+			document.querySelector("#inputName").focus();
+		});
 
-		// document.querySelector("#submitDeletePhoto").addEventListener("click", (event) => {
-		// 	rhit.fbSinglePhotoManager.delete().then(() => {
-		// 		console.log("Document successfully deleted!");
-		// 		window.location.href = "/list.html";
-		// 	}).catch((error) => {
-		// 		console.log("Error removing document: ", error);
-		// 	});
-		// });
 		document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
 			window.location.href = "/list.html";
 		});
@@ -265,18 +261,20 @@ rhit.FbSingleRouteManager = class {
 		this._unsubscribe();
 	}
 
-	// update(caption) {
-	// 	this._ref.update({
-	// 			[rhit.FB_KEY_CAPTION]: caption,
-	// 			[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
-	// 		})
-	// 		.then(() => {
-	// 			console.log("Document successfully updated!");
-	// 		})
-	// 		.catch((error) => {
-	// 			console.error("Error updating document: ", error);
-	// 		});
-	// }
+	update(name, difficulty, location) {
+		this._ref.update({
+				[rhit.FB_KEY_NAME]: name,
+				[rhit.FB_KEY_DIFFICULTY]: difficulty,
+				[rhit.FB_KEY_LOCATION]: location,
+				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
+			})
+			.then(() => {
+				console.log("Document successfully updated!");
+			})
+			.catch((error) => {
+				console.error("Error updating document: ", error);
+			});
+	}
 
 	delete() {
 		return this._ref.delete();

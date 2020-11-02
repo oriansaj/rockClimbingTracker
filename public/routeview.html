@@ -19,6 +19,8 @@
         <i class="material-icons">more_vert</i>
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="lr1">
+        <button id="menuEdit" class="dropdown-item" type="button" data-toggle="modal" data-target="#editRouteDialog"><i
+            class="material-icons">edit</i>&nbsp &nbsp &nbsp Edit</button>
         <button id="menuSignOut" class="dropdown-item" type="button"><i class="material-icons">login</i>&nbsp
           &nbsp
           &nbsp
@@ -42,11 +44,43 @@
       <p id="notes"></p>
     </div>
   </div>
+
   <div id="menuBar">
     <h5 id="toAllRoutes">All Routes</h5>
     <h5 id="toMyRoutes">My Routes</h5>
     <h5 id="toMyStats">My Stats</h5>
   </div>
+
+  <!-- Modals -->
+  <div class="modal fade" id="editRouteDialog" tabindex="-1" role="dialog" aria-labelledby="Edit route dialog"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit this route</h5>
+        </div>
+        <div class="modal-body">
+          <div class="form-group bmd-form-group">
+            <label for="inputName" class="bmd-label-floating">Name</label>
+            <input type="text" class="form-control" id="inputName">
+          </div>
+          <div class="form-group bmd-form-group">
+            <label for="inputDifficulty" class="bmd-label-floating">Difficulty</label>
+            <input type="text" class="form-control" id="inputDifficulty">
+          </div>
+          <div class="form-group bmd-form-group">
+            <label for="inputLocation" class="bmd-label-floating">Location</label>
+            <input type="text" class="form-control" id="inputLocation">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">CANCEL</button>
+          <button id="submitEditRoute" type="button" class="btn btn-primary" data-dismiss="modal">SAVE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>

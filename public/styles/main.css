@@ -93,6 +93,7 @@ body {
     color: #800000;
 }
 
-#submitAddRoute {
+#submitAddRoute,
+#submitEditRoute {
     color: #800000;
 }
