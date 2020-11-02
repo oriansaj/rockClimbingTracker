@@ -17,6 +17,15 @@ body {
     grid-template-rows: 100%;
 }
 
+.page-container {
+    justify-content: center;
+    text-align: center;
+}
+
+#logo {
+    max-width: 200px;
+}
+
 #menuBar {
     width: 100%;
     padding: 5px 20px;
