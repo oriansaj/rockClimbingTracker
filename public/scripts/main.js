@@ -77,6 +77,9 @@ rhit.FbAuthManager = class {
 	get uid() {
 		return this._user.uid;
 	}
+	get user() {
+		return this._ref.doc(this._user.uid);
+	}
 }
 
 rhit.ListPageController = class {
@@ -203,6 +206,13 @@ rhit.DetailPageController = class {
 			rhit.fbSingleRouteManager.update(name, difficulty, location);
 		});
 
+		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
+			const inProgress = document.querySelector("#inProgress").checked;
+			const startDate = document.querySelector("#inputStartDate").value;
+			const notes = document.querySelector("#inputNotes").value;
+			rhit.fbSingleRouteManager.addToMyRoutes(inProgress, startDate, notes);
+		});
+
 		$("#editRouteDialog").on("show.bs.modal", (event) => {
 			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
 			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
@@ -210,6 +220,16 @@ rhit.DetailPageController = class {
 		});
 		$("#editRouteDialog").on("shown.bs.modal", (event) => {
 			document.querySelector("#inputName").focus();
+		});
+
+		$("#addRouteDialog").on("show.bs.modal", (event) => {
+			document.querySelector("#inProgress").checked = true;
+			let now = new Date();
+			document.querySelector("#inputStartDate").value = (now.getMonth() + 1) + "/" + now.getDate() + "/" + now.getFullYear();
+			document.querySelector("#inputNotes").value = "";
+		});
+		$("#addRouteDialog").on("shown.bs.modal", (event) => {
+			document.querySelector("#inputStartDate").focus();
 		});
 
 		document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
@@ -274,6 +294,15 @@ rhit.FbSingleRouteManager = class {
 			.catch((error) => {
 				console.error("Error updating document: ", error);
 			});
+	}
+
+	addToMyRoutes(inProgress, startDate, notes) {
+		rhit.fbAuthManager.user.update({
+			[rhit.FB_KEY_ROUTES]: firebase.firestore.FieldValue.arrayUnion(this._ref),
+			[rhit.FB_KEY_IN_PROGRESS]: firebase.firestore.FieldValue.arrayUnion(inProgress),
+			[rhit.FB_KEY_NOTES]: firebase.firestore.FieldValue.arrayUnion(notes),
+			[rhit.FB_KEY_START_DATES]: firebase.firestore.FieldValue.arrayUnion(startDate)
+		});
 	}
 
 	delete() {

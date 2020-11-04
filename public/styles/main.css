@@ -64,8 +64,9 @@ body {
 .dropdown-menu-right {
     position: absolute;
     top: 32px;
-    left: -128px;
+    left: -190px;
     will-change: top, left;
+    width: max-content;
 }
 
 #fab {
@@ -84,7 +85,9 @@ body {
 
 #inputName,
 #inputDifficulty,
-#inputLocation {
+#inputLocation,
+#inputNotes,
+#startDate {
     background-image: linear-gradient(0deg, #800000 2px, rgba(0, 150, 136, 0) 0), linear-gradient(0deg, rgba(0, 0, 0, .26) 1px, transparent 0);
 }
 
@@ -96,4 +99,14 @@ body {
 #submitAddRoute,
 #submitEditRoute {
     color: #800000;
+}
+
+.checkbox label {
+    color: black;
+}
+
+.checkbox label input[type=checkbox]:checked+.checkbox-decorator .check,
+label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
+    color: #800000;
+    border-color: #800000;
 }
