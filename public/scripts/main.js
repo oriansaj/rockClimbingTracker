@@ -19,6 +19,7 @@ rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_DIFFICULTY = "difficulty";
 rhit.FB_KEY_LOCATION = "location";
 rhit.FB_KEY_LAST_TOUCHED = "lastTouched";
+rhit.FB_KEY_USERS = "users";
 rhit.fbAuthManager = null;
 rhit.fbRoutesManager = null;
 rhit.fbSingleRouteManager = null;
@@ -61,7 +62,8 @@ rhit.FbAuthManager = class {
 					this._userRef = this._ref.doc(this._user.uid);
 					this._userRef.onSnapshot((doc) => {
 						if (doc.exists) {
-							this._userDoc = doc;
+							rhit.fbAuthManager._userDoc = doc;
+							//changeListener();
 						}
 					});
 				});
@@ -186,7 +188,7 @@ rhit.FbRoutesManager = class {
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_LAST_TOUCHED, "desc").limit(50);
 		if (this._uid) {
-			query = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES).limit(50);
+			query = query.where(rhit.FB_KEY_USERS, "array-contains", this._uid);
 		}
 		query.onSnapshot((querySnapshot) => {
 			this._documentSnapshots = querySnapshot.docs;
@@ -306,8 +308,6 @@ rhit.FbSingleRouteManager = class {
 	}
 
 	addToMyRoutes(inProgress, startDate, notes) {
-		console.log(rhit.fbAuthManager.user);
-		console.log(this._documentSnapshot);
 		let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
 		let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
 		let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
@@ -321,6 +321,9 @@ rhit.FbSingleRouteManager = class {
 			[rhit.FB_KEY_IN_PROGRESS]: newProgress,
 			[rhit.FB_KEY_NOTES]: newNotes,
 			[rhit.FB_KEY_START_DATES]: newStarts
+		});
+		this._ref.update({
+			[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayUnion(rhit.fbAuthManager.uid)
 		});
 	}
 
