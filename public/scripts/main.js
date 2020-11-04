@@ -3,7 +3,7 @@
  * Provides the JavaScript interactions for all pages.
  *
  * @author 
- * Andrew Orians, Sam Dunaway
+ * Andrew Orians
  */
 
 /** namespace. */
