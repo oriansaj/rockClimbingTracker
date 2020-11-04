@@ -185,9 +185,9 @@ rhit.FbRoutesManager = class {
 	}
 	beginListening(changeListener) {
 		let query = this._ref.orderBy(rhit.FB_KEY_LAST_TOUCHED, "desc").limit(50);
-		// if (this._uid) {
-		// 	query = query.where(rhit.FB_KEY_AUTHOR, "==", this._uid);
-		// }
+		if (this._uid) {
+			query = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES).limit(50);
+		}
 		query.onSnapshot((querySnapshot) => {
 			this._documentSnapshots = querySnapshot.docs;
 			changeListener();
