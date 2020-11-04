@@ -63,7 +63,7 @@ rhit.FbAuthManager = class {
 					this._userRef.onSnapshot((doc) => {
 						if (doc.exists) {
 							rhit.fbAuthManager._userDoc = doc;
-							//changeListener();
+							changeListener();
 						}
 					});
 				});
@@ -90,6 +90,22 @@ rhit.FbAuthManager = class {
 	}
 	get userRef() {
 		return this._userRef;
+	}
+
+	get routes() {
+		return this._userDoc.get(rhit.FB_KEY_ROUTES);
+	}
+
+	get startDates() {
+		return this._userDoc.get(rhit.FB_KEY_START_DATES);
+	}
+
+	get notes() {
+		return this._userDoc.get(rhit.FB_KEY_NOTES);
+	}
+
+	get inProgresses() {
+		return this._userDoc.get(rhit.FB_KEY_IN_PROGRESS);
 	}
 }
 
@@ -176,7 +192,8 @@ rhit.FbRoutesManager = class {
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_DIFFICULTY]: difficulty,
 				[rhit.FB_KEY_LOCATION]: location,
-				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
+				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now(),
+				[rhit.FB_KEY_USERS]: []
 			})
 			.then(function (docRef) {
 				console.log("Document written with ID: ", docRef.id);
@@ -263,8 +280,19 @@ rhit.DetailPageController = class {
 		document.querySelector("#name").innerHTML = rhit.fbSingleRouteManager.name;
 		document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
 		document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
-		document.querySelector("#privateDetails").hidden = true;
 
+		if(rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
+			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+			document.querySelector("#startDate").innerHTML = rhit.fbAuthManager.startDates[index];
+			if(rhit.fbAuthManager.inProgresses[index]) {
+				document.querySelector("#status").innerHTML = "In Progress";
+			} else {
+				document.querySelector("#status").innerHTML = "Completed";
+			}
+			document.querySelector("#notes").innerHTML = rhit.fbAuthManager.notes[index];
+		} else {
+			document.querySelector("#privateDetails").hidden = true;
+		}
 		// if (rhit.fbSinglePhotoManager.author == rhit.fbAuthManager.uid) {
 		// 	document.querySelector("#menuEdit").style.display = "flex";
 		// 	document.querySelector("#menuDelete").style.display = "flex";
@@ -312,7 +340,7 @@ rhit.FbSingleRouteManager = class {
 		let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
 		let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
 		let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
-		newRoutes.push(this._ref);
+		newRoutes.push(this._documentSnapshot.get(rhit.FB_KEY_NAME));
 		newProgress.push(inProgress);
 		newNotes.push(notes);
 		newStarts.push(startDate);
@@ -341,6 +369,14 @@ rhit.FbSingleRouteManager = class {
 
 	get difficulty() {
 		return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
+	}
+
+	get users() {
+		return this._documentSnapshot.get(rhit.FB_KEY_USERS);
+	}
+
+	get route() {
+		return this._documentSnapshot;
 	}
 }
 
