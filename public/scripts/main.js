@@ -245,6 +245,12 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
 			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
 			document.querySelector("#inputLocation").value = rhit.fbSingleRouteManager.location;
+			if(rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
+				let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+				document.querySelector("#editStartDate").value = rhit.fbAuthManager.startDates[index];
+				document.querySelector("#editInProgress").checked = rhit.fbAuthManager.inProgresses[index];
+				document.querySelector("#editNotes").value = rhit.fbAuthManager.notes[index];
+			}
 		});
 		$("#editRouteDialog").on("shown.bs.modal", (event) => {
 			document.querySelector("#inputName").focus();
@@ -292,6 +298,7 @@ rhit.DetailPageController = class {
 			document.querySelector("#notes").innerHTML = rhit.fbAuthManager.notes[index];
 		} else {
 			document.querySelector("#privateDetails").hidden = true;
+			document.querySelector("#modalPrivateDetails").hidden = true;
 		}
 		// if (rhit.fbSinglePhotoManager.author == rhit.fbAuthManager.uid) {
 		// 	document.querySelector("#menuEdit").style.display = "flex";
