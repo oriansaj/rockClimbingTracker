@@ -15,6 +15,7 @@ rhit.FB_KEY_ROUTES = "routes";
 rhit.FB_KEY_NOTES = "notes";
 rhit.FB_KEY_START_DATES = "startDates";
 rhit.FB_KEY_IN_PROGRESS = "inProgress";
+rhit.FB_KEY_JOIN_DATE = "joinDate";
 rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_DIFFICULTY = "difficulty";
 rhit.FB_KEY_LOCATION = "location";
@@ -50,7 +51,8 @@ rhit.FbAuthManager = class {
 								[rhit.FB_KEY_ROUTES]: [],
 								[rhit.FB_KEY_NOTES]: [],
 								[rhit.FB_KEY_START_DATES]: [],
-								[rhit.FB_KEY_IN_PROGRESS]: []
+								[rhit.FB_KEY_IN_PROGRESS]: [],
+								[rhit.FB_KEY_JOIN_DATE]: firebase.firestore.Timestamp.now()
 							})
 							.then(() => {
 								console.log("User successfully added!");
@@ -106,6 +108,10 @@ rhit.FbAuthManager = class {
 
 	get inProgresses() {
 		return this._userDoc.get(rhit.FB_KEY_IN_PROGRESS);
+	}
+
+	get joinDate() {
+		return this._userDoc.get(rhit.FB_KEY_JOIN_DATE).toDate();
 	}
 }
 
@@ -329,19 +335,18 @@ rhit.DetailPageController = class {
 }
 
 function initMap() {
-	// The location of Uluru
-	const uluru = {
-		lat: -25.344,
-		lng: 131.036
+	const routeLocation = {
+		lat: 39.482235,
+		lng: -87.328030
 	};
 	// The map, centered at Uluru
 	const map = new google.maps.Map(document.getElementById("map"), {
-		zoom: 4,
-		center: uluru,
+		zoom: 15,
+		center: routeLocation,
 	});
 	// The marker, positioned at Uluru
 	const marker = new google.maps.Marker({
-		position: uluru,
+		position: routeLocation,
 		map: map,
 	});
 }
@@ -473,6 +478,36 @@ rhit.FbSingleRouteManager = class {
 	}
 }
 
+rhit.StatsPageController = class {
+	constructor() {
+		document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
+			window.location.href = "/list.html";
+		});
+		document.querySelector("#toMyRoutes").addEventListener("click", (event) => {
+			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+		});
+		document.querySelector("#toMyStats").addEventListener("click", (event) => {
+			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+		});
+		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+			rhit.fbAuthManager.signOut();
+		});
+
+		const routesProgress = rhit.fbAuthManager.inProgresses;
+		let numInProgress = 0;
+		for (const bool of routesProgress) {
+			if (bool) {
+				numInProgress++;
+			}
+		}
+		document.querySelector("#total").innerHTML = routesProgress.length;
+		document.querySelector("#inProgress").innerHTML = numInProgress;
+		document.querySelector("#completed").innerHTML = routesProgress.length - numInProgress;
+
+		document.querySelector("#dateJoined").innerHTML = rhit.fbAuthManager.joinDate.toLocaleDateString();
+	}
+}
+
 rhit.checkForRedirects = function () {
 	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
 		window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
@@ -504,6 +539,10 @@ rhit.initializePage = function () {
 		}
 		rhit.fbSingleRouteManager = new rhit.FbSingleRouteManager(routeId);
 		new rhit.DetailPageController();
+	}
+
+	if (document.querySelector("#statsPage")) {
+		new rhit.StatsPageController();
 	}
 }
 
