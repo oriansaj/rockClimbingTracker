@@ -23,8 +23,9 @@
             class="material-icons">edit</i>&nbsp &nbsp &nbsp Edit</button>
         <button id="menuAdd" class="dropdown-item" type="button" data-toggle="modal" data-target="#addRouteDialog"><i
             class="material-icons">add</i>&nbsp &nbsp &nbsp Add to my Routes</button>
-        <button id="menuDelete" class="dropdown-item" type="button" data-toggle="modal" data-target="#deleteRouteDialog"><i
-            class="material-icons">remove</i>&nbsp &nbsp &nbsp Delete From my Routes</button>
+        <button id="menuDelete" class="dropdown-item" type="button" data-toggle="modal"
+          data-target="#deleteRouteDialog"><i class="material-icons">remove</i>&nbsp &nbsp &nbsp Delete From my
+          Routes</button>
         <button id="menuSignOut" class="dropdown-item" type="button"><i class="material-icons">login</i>&nbsp
           &nbsp
           &nbsp
@@ -46,6 +47,7 @@
       <h1 id="status"></h1>
       <h5>Notes</h5>
       <p id="notes"></p>
+      <div id="map"></div>
     </div>
   </div>
 
@@ -141,6 +143,9 @@
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRVE9OGnTtd4jl8bwpS1Rvs5osSP_HDPc&callback=initMap"
+    type="text/javascript"></script>
   <script src="scripts/main.js"></script>
 </body>
 

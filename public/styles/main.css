@@ -109,3 +109,10 @@ label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
     color: #800000;
     border-color: #800000;
 }
+
+#map {
+    height: 400px;
+    /* The height is 400 pixels */
+    width: 100%;
+    /* The width is the width of the web page */
+}
