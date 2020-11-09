@@ -71,7 +71,9 @@ rhit.FbAuthManager = class {
 					});
 				});
 			}
-			changeListener();
+			if (!document.querySelector("#listPage")) {
+				changeListener(); // Creates difficulties with add there
+			}
 		});
 	}
 	signOut() {

@@ -95,11 +95,11 @@ body {
     color: black;
 }
 
-.checkbox label input[type=checkbox]:checked+.checkbox-decorator .check,
+/* .checkbox label input[type=checkbox]:checked+.checkbox-decorator .check,
 label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
     color: #800000;
     border-color: #800000;
-}
+} */
 
 #map {
     height: 40vh;
