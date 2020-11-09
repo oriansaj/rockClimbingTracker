@@ -231,7 +231,15 @@ rhit.DetailPageController = class {
 			const name = document.querySelector("#inputName").value;
 			const difficulty = document.querySelector("#inputDifficulty").value;
 			const location = document.querySelector("#inputLocation").value;
-			rhit.fbSingleRouteManager.update(name, difficulty, location);
+			let inProgress = null;
+			let notes = null;
+			let startDate = null;
+			if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
+				inProgress = document.querySelector("#editInProgress").checked;
+				notes = document.querySelector("#editNotes").value;
+				startDate = document.querySelector("#editStartDate").value;
+			}
+			rhit.fbSingleRouteManager.update(name, difficulty, location, inProgress, notes, startDate);
 		});
 
 		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
@@ -245,7 +253,7 @@ rhit.DetailPageController = class {
 			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
 			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
 			document.querySelector("#inputLocation").value = rhit.fbSingleRouteManager.location;
-			if(rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
+			if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
 				let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
 				document.querySelector("#editStartDate").value = rhit.fbAuthManager.startDates[index];
 				document.querySelector("#editInProgress").checked = rhit.fbAuthManager.inProgresses[index];
@@ -287,10 +295,10 @@ rhit.DetailPageController = class {
 		document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
 		document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
 
-		if(rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
+		if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
 			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
 			document.querySelector("#startDate").innerHTML = rhit.fbAuthManager.startDates[index];
-			if(rhit.fbAuthManager.inProgresses[index]) {
+			if (rhit.fbAuthManager.inProgresses[index]) {
 				document.querySelector("#status").innerHTML = "In Progress";
 			} else {
 				document.querySelector("#status").innerHTML = "Completed";
@@ -327,7 +335,7 @@ rhit.FbSingleRouteManager = class {
 		this._unsubscribe();
 	}
 
-	update(name, difficulty, location) {
+	update(name, difficulty, location, inProgress, notes, startDate) {
 		this._ref.update({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_DIFFICULTY]: difficulty,
@@ -340,6 +348,20 @@ rhit.FbSingleRouteManager = class {
 			.catch((error) => {
 				console.error("Error updating document: ", error);
 			});
+		if (notes != null) {
+			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+			let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
+			let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
+			let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
+			newProgress[index] = inProgress;
+			newNotes[index] = notes;
+			newStarts[index] = startDate;
+			rhit.fbAuthManager.userRef.update({
+				[rhit.FB_KEY_IN_PROGRESS]: newProgress,
+				[rhit.FB_KEY_NOTES]: newNotes,
+				[rhit.FB_KEY_START_DATES]: newStarts
+			});
+		}
 	}
 
 	addToMyRoutes(inProgress, startDate, notes) {
