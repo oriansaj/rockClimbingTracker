@@ -52,9 +52,13 @@ body {
 .dropdown-menu-right {
     position: absolute;
     top: 32px;
-    left: -190px;
+    left: -128px;
     will-change: top, left;
     width: max-content;
+}
+
+#routeViewMenu {
+    left: -220px;
 }
 
 #fab {
@@ -111,4 +115,5 @@ label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 100%;
+    grid-column-gap: 30px;
 }

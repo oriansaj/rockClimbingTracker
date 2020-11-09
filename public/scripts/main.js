@@ -134,8 +134,8 @@ rhit.ListPageController = class {
 		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
 			const difficulty = document.querySelector("#inputDifficulty").value;
-			const lat = document.querySelector("#inputLat").value;
-			const long = document.querySelector("#inputLong").value;
+			const lat = parseFloat(document.querySelector("#inputLat").value);
+			const long = parseFloat(document.querySelector("#inputLong").value);
 			rhit.fbRoutesManager.add(name, difficulty, lat, long);
 		});
 
@@ -238,8 +238,8 @@ rhit.DetailPageController = class {
 		document.querySelector("#submitEditRoute").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
 			const difficulty = document.querySelector("#inputDifficulty").value;
-			const lat = document.querySelector("#inputLat").value;
-			const long = document.querySelector("#inputLong").value;
+			const lat = parseFloat(document.querySelector("#inputLat").value);
+			const long = parseFloat(document.querySelector("#inputLong").value);
 			let inProgress = null;
 			let notes = null;
 			let startDate = null;
