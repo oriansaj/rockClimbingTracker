@@ -125,7 +125,7 @@ rhit.ListPageController = class {
 			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
 		});
 		document.querySelector("#toMyStats").addEventListener("click", (event) => {
-			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+			window.location.href = `/stats.html`;
 		});
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
@@ -260,14 +260,21 @@ rhit.DetailPageController = class {
 
 		$("#editRouteDialog").on("show.bs.modal", (event) => {
 			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
+			document.querySelector("#inputName").parentElement.classList.add("is-filled");
 			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
+			document.querySelector("#inputDifficulty").parentElement.classList.add("is-filled");
 			document.querySelector("#inputLat").value = rhit.fbSingleRouteManager.lat;
+			document.querySelector("#inputLat").parentElement.classList.add("is-filled");
 			document.querySelector("#inputLong").value = rhit.fbSingleRouteManager.long;
+			document.querySelector("#inputLong").parentElement.classList.add("is-filled");
 			if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
 				let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
 				document.querySelector("#editStartDate").value = rhit.fbAuthManager.startDates[index];
+				document.querySelector("#editStartDate").parentElement.classList.add("is-filled");
 				document.querySelector("#editInProgress").checked = rhit.fbAuthManager.inProgresses[index];
+				document.querySelector("#editInProgress").parentElement.classList.add("is-filled");
 				document.querySelector("#editNotes").value = rhit.fbAuthManager.notes[index];
+				document.querySelector("#editNotes").parentElement.classList.add("is-filled");
 			}
 		});
 		$("#editRouteDialog").on("shown.bs.modal", (event) => {
@@ -278,6 +285,7 @@ rhit.DetailPageController = class {
 			document.querySelector("#inProgress").checked = true;
 			let now = new Date();
 			document.querySelector("#inputStartDate").value = (now.getMonth() + 1) + "/" + now.getDate() + "/" + now.getFullYear();
+			document.querySelector("#inputStartDate").parentElement.classList.add("is-filled");
 			document.querySelector("#inputNotes").value = "";
 		});
 		$("#addRouteDialog").on("shown.bs.modal", (event) => {
@@ -291,7 +299,7 @@ rhit.DetailPageController = class {
 			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
 		});
 		document.querySelector("#toMyStats").addEventListener("click", (event) => {
-			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+			window.location.href = `/stats.html`;
 		});
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
@@ -498,7 +506,7 @@ rhit.StatsPageController = class {
 			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
 		});
 		document.querySelector("#toMyStats").addEventListener("click", (event) => {
-			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+			window.location.href = `/stats.html`;
 		});
 		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
 			rhit.fbAuthManager.signOut();
