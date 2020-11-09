@@ -68,7 +68,7 @@ rhit.FbAuthManager = class {
 					});
 				});
 			}
-			changeListener();
+			//changeListener();
 		});
 	}
 	signOut() {
@@ -287,15 +287,26 @@ rhit.DetailPageController = class {
 			rhit.fbAuthManager.signOut();
 		});
 
+		document.querySelector("#menuDelete").addEventListener("click", (event) => {
+			rhit.fbSingleRouteManager.delete();
+			// .then(() => {
+			// 	window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+			// }).catch((err) => {
+			// 	console.log("Error removing document: ", error);
+			// });
+		});
+
 		initMap();
 
 		rhit.fbSingleRouteManager.beginListening(this.updateView.bind(this));
 	}
 
 	updateView() {
-		document.querySelector("#name").innerHTML = rhit.fbSingleRouteManager.name;
-		document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
-		document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
+		if (rhit.fbSingleRouteManager.name) {
+			document.querySelector("#name").innerHTML = rhit.fbSingleRouteManager.name;
+			document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
+			document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
+		}
 
 		if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
 			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
@@ -405,23 +416,56 @@ rhit.FbSingleRouteManager = class {
 	}
 
 	delete() {
-		return this._ref.delete();
+		let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+		let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
+		let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
+		let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
+		let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
+		newRoutes.splice(index, 1);
+		newProgress.splice(index, 1);
+		newNotes.splice(index, 1);
+		newStarts.splice(index, 1);
+		rhit.fbAuthManager.userRef.update({
+			[rhit.FB_KEY_ROUTES]: newRoutes,
+			[rhit.FB_KEY_IN_PROGRESS]: newProgress,
+			[rhit.FB_KEY_NOTES]: newNotes,
+			[rhit.FB_KEY_START_DATES]: newStarts
+		});
+		this._ref.update({
+			[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayRemove(rhit.fbAuthManager.uid)
+		});
 	}
 
 	get name() {
-		return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+		if (this._documentSnapshot) {
+			return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+		} else {
+			return null;
+		}
 	}
 
 	get location() {
-		return this._documentSnapshot.get(rhit.FB_KEY_LOCATION);
+		if (this._documentSnapshot) {
+			return this._documentSnapshot.get(rhit.FB_KEY_LOCATION);
+		} else {
+			return null;
+		}
 	}
 
 	get difficulty() {
-		return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
+		if (this._documentSnapshot) {
+			return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
+		} else {
+			return null;
+		}
 	}
 
 	get users() {
-		return this._documentSnapshot.get(rhit.FB_KEY_USERS);
+		if (this._documentSnapshot) {
+			return this._documentSnapshot.get(rhit.FB_KEY_USERS);
+		} else {
+			return null;
+		}
 	}
 
 	get route() {
