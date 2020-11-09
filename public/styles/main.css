@@ -106,3 +106,9 @@ label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
 #menuDelete {
     display: none;
 }
+
+#locationLatLong {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 100%;
+}

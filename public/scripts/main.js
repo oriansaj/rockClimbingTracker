@@ -18,7 +18,8 @@ rhit.FB_KEY_IN_PROGRESS = "inProgress";
 rhit.FB_KEY_JOIN_DATE = "joinDate";
 rhit.FB_KEY_NAME = "name";
 rhit.FB_KEY_DIFFICULTY = "difficulty";
-rhit.FB_KEY_LOCATION = "location";
+rhit.FB_KEY_LAT = "lat";
+rhit.FB_KEY_LONG = "long";
 rhit.FB_KEY_LAST_TOUCHED = "lastTouched";
 rhit.FB_KEY_USERS = "users";
 rhit.fbAuthManager = null;
@@ -70,7 +71,7 @@ rhit.FbAuthManager = class {
 					});
 				});
 			}
-			//changeListener();
+			changeListener();
 		});
 	}
 	signOut() {
@@ -133,14 +134,16 @@ rhit.ListPageController = class {
 		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
 			const difficulty = document.querySelector("#inputDifficulty").value;
-			const location = document.querySelector("#inputLocation").value;
-			rhit.fbRoutesManager.add(name, difficulty, location);
+			const lat = document.querySelector("#inputLat").value;
+			const long = document.querySelector("#inputLong").value;
+			rhit.fbRoutesManager.add(name, difficulty, lat, long);
 		});
 
 		$("#addRouteDialog").on("show.bs.modal", (event) => {
 			document.querySelector("#inputName").value = "";
 			document.querySelector("#inputDifficulty").value = "";
-			document.querySelector("#inputLocation").value = "";
+			document.querySelector("#inputLat").value = "";
+			document.querySelector("#inputLong").value = "";
 		});
 		$("#addPhotoDialog").on("shown.bs.modal", (event) => {
 			document.querySelector("#inputName").focus();
@@ -191,11 +194,12 @@ rhit.FbRoutesManager = class {
 		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_ROUTES);
 		this._unsubscribe = null;
 	}
-	add(name, difficulty, location) {
+	add(name, difficulty, lat, long) {
 		this._ref.add({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_DIFFICULTY]: difficulty,
-				[rhit.FB_KEY_LOCATION]: location,
+				[rhit.FB_KEY_LAT]: lat,
+				[rhit.FB_KEY_LONG]: long,
 				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now(),
 				[rhit.FB_KEY_USERS]: []
 			})
@@ -234,7 +238,8 @@ rhit.DetailPageController = class {
 		document.querySelector("#submitEditRoute").addEventListener("click", (event) => {
 			const name = document.querySelector("#inputName").value;
 			const difficulty = document.querySelector("#inputDifficulty").value;
-			const location = document.querySelector("#inputLocation").value;
+			const lat = document.querySelector("#inputLat").value;
+			const long = document.querySelector("#inputLong").value;
 			let inProgress = null;
 			let notes = null;
 			let startDate = null;
@@ -243,7 +248,7 @@ rhit.DetailPageController = class {
 				notes = document.querySelector("#editNotes").value;
 				startDate = document.querySelector("#editStartDate").value;
 			}
-			rhit.fbSingleRouteManager.update(name, difficulty, location, inProgress, notes, startDate);
+			rhit.fbSingleRouteManager.update(name, difficulty, lat, long, inProgress, notes, startDate);
 		});
 
 		document.querySelector("#submitAddRoute").addEventListener("click", (event) => {
@@ -256,7 +261,8 @@ rhit.DetailPageController = class {
 		$("#editRouteDialog").on("show.bs.modal", (event) => {
 			document.querySelector("#inputName").value = rhit.fbSingleRouteManager.name;
 			document.querySelector("#inputDifficulty").value = rhit.fbSingleRouteManager.difficulty;
-			document.querySelector("#inputLocation").value = rhit.fbSingleRouteManager.location;
+			document.querySelector("#inputLat").value = rhit.fbSingleRouteManager.lat;
+			document.querySelector("#inputLong").value = rhit.fbSingleRouteManager.long;
 			if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
 				let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
 				document.querySelector("#editStartDate").value = rhit.fbAuthManager.startDates[index];
@@ -304,7 +310,7 @@ rhit.DetailPageController = class {
 		if (rhit.fbSingleRouteManager.name) {
 			document.querySelector("#name").innerHTML = rhit.fbSingleRouteManager.name;
 			document.querySelector("#difficulty").innerHTML = rhit.fbSingleRouteManager.difficulty;
-			document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
+			//document.querySelector("#location").innerHTML = rhit.fbSingleRouteManager.location;
 		}
 
 		if (rhit.fbSingleRouteManager.users.includes(rhit.fbAuthManager.uid)) {
@@ -326,244 +332,255 @@ rhit.DetailPageController = class {
 	}
 }
 
+// The maps api uses this as a callback, so it has to be global
 function initMap() {
-	const routeLocation = {
-		lat: 39.482235,
-		lng: -87.328030
-	};
-	// The map, centered at Uluru
-	const map = new google.maps.Map(document.getElementById("map"), {
-		zoom: 15,
-		center: routeLocation,
-	});
-	// The marker, positioned at Uluru
-	const marker = new google.maps.Marker({
-		position: routeLocation,
-		map: map,
-	});
-}
-
-rhit.FbSingleRouteManager = class {
-	constructor(routeId) {
-		this._documentSnapshot = {};
-		this._unsubscribe = null;
-		this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_ROUTES).doc(routeId);
-	}
-	beginListening(changeListener) {
-		this._unsubscribe = this._ref.onSnapshot((doc) => {
-			if (doc.exists) {
-				this._documentSnapshot = doc;
-				changeListener();
-			} else {
-
-			}
-		});
-	}
-	stopListening() {
-		this._unsubscribe();
-	}
-
-	update(name, difficulty, location, inProgress, notes, startDate) {
-		this._ref.update({
-				[rhit.FB_KEY_NAME]: name,
-				[rhit.FB_KEY_DIFFICULTY]: difficulty,
-				[rhit.FB_KEY_LOCATION]: location,
-				[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
-			})
-			.then(() => {
-				console.log("Document successfully updated!");
-			})
-			.catch((error) => {
-				console.error("Error updating document: ", error);
+	// Wait unil the fbSingleRouteManager has been initialized
+	setTimeout(() => {
+			const routeLocation = {
+				lat: rhit.fbSingleRouteManager.lat,
+				lng: rhit.fbSingleRouteManager.long
+			};
+			const map = new google.maps.Map(document.getElementById("map"), {
+				zoom: 15,
+				center: routeLocation,
 			});
-		if (notes != null) {
-			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+			const marker = new google.maps.Marker({
+				position: routeLocation,
+				map: map,
+			});
+		}, 5);
+	}
+
+	rhit.FbSingleRouteManager = class {
+		constructor(routeId) {
+			this._documentSnapshot = {};
+			this._unsubscribe = null;
+			this._ref = firebase.firestore().collection(rhit.FB_COLLECTION_ROUTES).doc(routeId);
+		}
+		beginListening(changeListener) {
+			this._unsubscribe = this._ref.onSnapshot((doc) => {
+				if (doc.exists) {
+					this._documentSnapshot = doc;
+					changeListener();
+				} else {
+
+				}
+			});
+		}
+		stopListening() {
+			this._unsubscribe();
+		}
+
+		update(name, difficulty, lat, long, inProgress, notes, startDate) {
+			this._ref.update({
+					[rhit.FB_KEY_NAME]: name,
+					[rhit.FB_KEY_DIFFICULTY]: difficulty,
+					[rhit.FB_KEY_LAT]: lat,
+					[rhit.FB_KEY_LONG]: long,
+					[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
+				})
+				.then(() => {
+					console.log("Document successfully updated!");
+				})
+				.catch((error) => {
+					console.error("Error updating document: ", error);
+				});
+			if (notes != null) {
+				let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+				let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
+				let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
+				let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
+				newProgress[index] = inProgress;
+				newNotes[index] = notes;
+				newStarts[index] = startDate;
+				rhit.fbAuthManager.userRef.update({
+					[rhit.FB_KEY_IN_PROGRESS]: newProgress,
+					[rhit.FB_KEY_NOTES]: newNotes,
+					[rhit.FB_KEY_START_DATES]: newStarts
+				});
+			}
+		}
+
+		addToMyRoutes(inProgress, startDate, notes) {
+			let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
 			let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
 			let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
 			let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
-			newProgress[index] = inProgress;
-			newNotes[index] = notes;
-			newStarts[index] = startDate;
+			newRoutes.push(this._documentSnapshot.get(rhit.FB_KEY_NAME));
+			newProgress.push(inProgress);
+			newNotes.push(notes);
+			newStarts.push(startDate);
 			rhit.fbAuthManager.userRef.update({
+				[rhit.FB_KEY_ROUTES]: newRoutes,
 				[rhit.FB_KEY_IN_PROGRESS]: newProgress,
 				[rhit.FB_KEY_NOTES]: newNotes,
 				[rhit.FB_KEY_START_DATES]: newStarts
 			});
+			this._ref.update({
+				[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayUnion(rhit.fbAuthManager.uid)
+			});
 		}
-	}
 
-	addToMyRoutes(inProgress, startDate, notes) {
-		let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
-		let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
-		let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
-		let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
-		newRoutes.push(this._documentSnapshot.get(rhit.FB_KEY_NAME));
-		newProgress.push(inProgress);
-		newNotes.push(notes);
-		newStarts.push(startDate);
-		rhit.fbAuthManager.userRef.update({
-			[rhit.FB_KEY_ROUTES]: newRoutes,
-			[rhit.FB_KEY_IN_PROGRESS]: newProgress,
-			[rhit.FB_KEY_NOTES]: newNotes,
-			[rhit.FB_KEY_START_DATES]: newStarts
-		});
-		this._ref.update({
-			[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayUnion(rhit.fbAuthManager.uid)
-		});
-	}
-
-	delete() {
-		let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
-		let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
-		let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
-		let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
-		let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
-		newRoutes.splice(index, 1);
-		newProgress.splice(index, 1);
-		newNotes.splice(index, 1);
-		newStarts.splice(index, 1);
-		rhit.fbAuthManager.userRef.update({
-			[rhit.FB_KEY_ROUTES]: newRoutes,
-			[rhit.FB_KEY_IN_PROGRESS]: newProgress,
-			[rhit.FB_KEY_NOTES]: newNotes,
-			[rhit.FB_KEY_START_DATES]: newStarts
-		});
-		this._ref.update({
-			[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayRemove(rhit.fbAuthManager.uid)
-		});
-	}
-
-	get name() {
-		if (this._documentSnapshot) {
-			return this._documentSnapshot.get(rhit.FB_KEY_NAME);
-		} else {
-			return null;
+		delete() {
+			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+			let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
+			let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
+			let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
+			let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
+			newRoutes.splice(index, 1);
+			newProgress.splice(index, 1);
+			newNotes.splice(index, 1);
+			newStarts.splice(index, 1);
+			rhit.fbAuthManager.userRef.update({
+				[rhit.FB_KEY_ROUTES]: newRoutes,
+				[rhit.FB_KEY_IN_PROGRESS]: newProgress,
+				[rhit.FB_KEY_NOTES]: newNotes,
+				[rhit.FB_KEY_START_DATES]: newStarts
+			});
+			this._ref.update({
+				[rhit.FB_KEY_USERS]: firebase.firestore.FieldValue.arrayRemove(rhit.fbAuthManager.uid)
+			});
 		}
-	}
 
-	get location() {
-		if (this._documentSnapshot) {
-			return this._documentSnapshot.get(rhit.FB_KEY_LOCATION);
-		} else {
-			return null;
-		}
-	}
-
-	get difficulty() {
-		if (this._documentSnapshot) {
-			return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
-		} else {
-			return null;
-		}
-	}
-
-	get users() {
-		if (this._documentSnapshot) {
-			return this._documentSnapshot.get(rhit.FB_KEY_USERS);
-		} else {
-			return null;
-		}
-	}
-
-	get route() {
-		return this._documentSnapshot;
-	}
-}
-
-rhit.StatsPageController = class {
-	constructor() {
-		document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
-			window.location.href = "/list.html";
-		});
-		document.querySelector("#toMyRoutes").addEventListener("click", (event) => {
-			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
-		});
-		document.querySelector("#toMyStats").addEventListener("click", (event) => {
-			window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
-		});
-		document.querySelector("#menuSignOut").addEventListener("click", (event) => {
-			rhit.fbAuthManager.signOut();
-		});
-
-		const routesProgress = rhit.fbAuthManager.inProgresses;
-		let numInProgress = 0;
-		for (const bool of routesProgress) {
-			if (bool) {
-				numInProgress++;
+		get name() {
+			if (this._documentSnapshot) {
+				return this._documentSnapshot.get(rhit.FB_KEY_NAME);
+			} else {
+				return null;
 			}
 		}
-		document.querySelector("#total").innerHTML = routesProgress.length;
-		document.querySelector("#inProgress").innerHTML = numInProgress;
-		document.querySelector("#completed").innerHTML = routesProgress.length - numInProgress;
 
-		document.querySelector("#dateJoined").innerHTML = rhit.fbAuthManager.joinDate.toLocaleDateString();
+		get lat() {
+			if (this._documentSnapshot) {
+				return this._documentSnapshot.get(rhit.FB_KEY_LAT);
+			} else {
+				return null;
+			}
+		}
+
+		get long() {
+			if (this._documentSnapshot) {
+				return this._documentSnapshot.get(rhit.FB_KEY_LONG);
+			} else {
+				return null;
+			}
+		}
+
+		get difficulty() {
+			if (this._documentSnapshot) {
+				return this._documentSnapshot.get(rhit.FB_KEY_DIFFICULTY);
+			} else {
+				return null;
+			}
+		}
+
+		get users() {
+			if (this._documentSnapshot) {
+				return this._documentSnapshot.get(rhit.FB_KEY_USERS);
+			} else {
+				return null;
+			}
+		}
+
+		get route() {
+			return this._documentSnapshot;
+		}
 	}
-}
 
-rhit.checkForRedirects = function () {
-	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
-		window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+	rhit.StatsPageController = class {
+		constructor() {
+			document.querySelector("#toAllRoutes").addEventListener("click", (event) => {
+				window.location.href = "/list.html";
+			});
+			document.querySelector("#toMyRoutes").addEventListener("click", (event) => {
+				window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+			});
+			document.querySelector("#toMyStats").addEventListener("click", (event) => {
+				window.location.href = `/stats.html?uid=${rhit.fbAuthManager.uid}`;
+			});
+			document.querySelector("#menuSignOut").addEventListener("click", (event) => {
+				rhit.fbAuthManager.signOut();
+			});
+
+			const routesProgress = rhit.fbAuthManager.inProgresses;
+			let numInProgress = 0;
+			for (const bool of routesProgress) {
+				if (bool) {
+					numInProgress++;
+				}
+			}
+			document.querySelector("#total").innerHTML = routesProgress.length;
+			document.querySelector("#inProgress").innerHTML = numInProgress;
+			document.querySelector("#completed").innerHTML = routesProgress.length - numInProgress;
+
+			document.querySelector("#dateJoined").innerHTML = rhit.fbAuthManager.joinDate.toLocaleDateString();
+		}
 	}
 
-	if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn) {
-		window.location.href = "/";
-	}
-}
+	rhit.checkForRedirects = function () {
+		if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSignedIn) {
+			window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
+		}
 
-rhit.initializePage = function () {
-	if (document.querySelector("#loginPage")) {
-		rhit.startFirebaseUI();
-	}
-
-	if (document.querySelector("#listPage")) {
-		const urlParams = new URLSearchParams(window.location.search);
-		const userId = urlParams.get("uid");
-
-		rhit.fbRoutesManager = new rhit.FbRoutesManager(userId);
-		new rhit.ListPageController();
-	}
-
-	if (document.querySelector("#detailPage")) {
-		const urlParams = new URLSearchParams(window.location.search);
-		const routeId = urlParams.get("id");
-		if (!routeId) {
+		if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSignedIn) {
 			window.location.href = "/";
 		}
-		rhit.fbSingleRouteManager = new rhit.FbSingleRouteManager(routeId);
-		new rhit.DetailPageController();
 	}
 
-	if (document.querySelector("#statsPage")) {
-		new rhit.StatsPageController();
+	rhit.initializePage = function () {
+		if (document.querySelector("#loginPage")) {
+			rhit.startFirebaseUI();
+		}
+
+		if (document.querySelector("#listPage")) {
+			const urlParams = new URLSearchParams(window.location.search);
+			const userId = urlParams.get("uid");
+
+			rhit.fbRoutesManager = new rhit.FbRoutesManager(userId);
+			new rhit.ListPageController();
+		}
+
+		if (document.querySelector("#detailPage")) {
+			const urlParams = new URLSearchParams(window.location.search);
+			const routeId = urlParams.get("id");
+			if (!routeId) {
+				window.location.href = "/";
+			}
+			rhit.fbSingleRouteManager = new rhit.FbSingleRouteManager(routeId);
+			new rhit.DetailPageController();
+		}
+
+		if (document.querySelector("#statsPage")) {
+			new rhit.StatsPageController();
+		}
 	}
-}
 
-/* Main */
-/** function and class syntax examples */
-rhit.main = function () {
-	console.log("Ready");
+	/* Main */
+	/** function and class syntax examples */
+	rhit.main = function () {
+		console.log("Ready");
 
-	rhit.fbAuthManager = new rhit.FbAuthManager();
-	rhit.fbAuthManager.beginListening(() => {
-		rhit.checkForRedirects();
-		rhit.initializePage();
-	});
-};
-
-rhit.startFirebaseUI = function () {
-	// FirebaseUI config.
-	var uiConfig = {
-		signInSuccessUrl: '/',
-		signInOptions: [
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			firebase.auth.EmailAuthProvider.PROVIDER_ID
-		],
+		rhit.fbAuthManager = new rhit.FbAuthManager();
+		rhit.fbAuthManager.beginListening(() => {
+			rhit.checkForRedirects();
+			rhit.initializePage();
+		});
 	};
 
-	// Initialize the FirebaseUI Widget using Firebase.
-	const ui = new firebaseui.auth.AuthUI(firebase.auth());
-	// The start method will wait until the DOM is loaded.
-	ui.start('#firebaseui-auth-container', uiConfig);
-};
+	rhit.startFirebaseUI = function () {
+		// FirebaseUI config.
+		var uiConfig = {
+			signInSuccessUrl: '/',
+			signInOptions: [
+				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				firebase.auth.EmailAuthProvider.PROVIDER_ID
+			],
+		};
 
-rhit.main();
+		// Initialize the FirebaseUI Widget using Firebase.
+		const ui = new firebaseui.auth.AuthUI(firebase.auth());
+		// The start method will wait until the DOM is loaded.
+		ui.start('#firebaseui-auth-container', uiConfig);
+	};
+
+	rhit.main();
