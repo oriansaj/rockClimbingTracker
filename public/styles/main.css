@@ -9,16 +9,11 @@ body {
 
 .page-container {
     margin-top: 75px;
+    margin-bottom: 75px;
 }
 
 .card {
     margin: 10px 0;
-}
-
-.card-body {
-    display: grid;
-    grid-template-columns: 10fr 1fr;
-    grid-template-rows: 100%;
 }
 
 #loginPage {
@@ -47,13 +42,6 @@ body {
     margin: 0 5vw;
     display: inline;
     font-size: 1rem;
-}
-
-.inProgressDot {
-    display: inline-block;
-    margin-left: auto;
-    max-width: 5em;
-    max-height: 5em;
 }
 
 .card-title {
@@ -111,8 +99,10 @@ label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
 }
 
 #map {
-    height: 400px;
-    /* The height is 400 pixels */
-    width: 100%;
-    /* The width is the width of the web page */
+    height: 40vh;
+    width: 70%;
+}
+
+#menuDelete {
+    display: none;
 }

@@ -153,7 +153,6 @@ rhit.ListPageController = class {
 		return htmlToElement(`<div class="card">
         <div class="card-body">
           <h5 class="card-title">${route.name}</h5>
-          <img src="${route.img}" alt="" class="inProgressDot">
         </div>
       </div>`);
 	}
@@ -179,10 +178,9 @@ rhit.ListPageController = class {
 }
 
 rhit.Route = class {
-	constructor(id, name, img) {
+	constructor(id, name) {
 		this.id = id;
 		this.name = name;
-		this.img = img;
 	}
 }
 
@@ -226,7 +224,7 @@ rhit.FbRoutesManager = class {
 	}
 	getRouteAtIndex(index) {
 		const docSnapshot = this._documentSnapshots[index];
-		const route = new rhit.Route(docSnapshot.id, docSnapshot.get(rhit.FB_KEY_NAME), null);
+		const route = new rhit.Route(docSnapshot.id, docSnapshot.get(rhit.FB_KEY_NAME));
 		return route;
 	}
 }
@@ -295,11 +293,6 @@ rhit.DetailPageController = class {
 
 		document.querySelector("#menuDelete").addEventListener("click", (event) => {
 			rhit.fbSingleRouteManager.delete();
-			// .then(() => {
-			// 	window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
-			// }).catch((err) => {
-			// 	console.log("Error removing document: ", error);
-			// });
 		});
 
 		initMap();
@@ -323,14 +316,13 @@ rhit.DetailPageController = class {
 				document.querySelector("#status").innerHTML = "Completed";
 			}
 			document.querySelector("#notes").innerHTML = rhit.fbAuthManager.notes[index];
+
+			document.querySelector("#menuAdd").style.display = "none";
+			document.querySelector("#menuDelete").style.display = "flex";
 		} else {
 			document.querySelector("#privateDetails").hidden = true;
 			document.querySelector("#modalPrivateDetails").hidden = true;
 		}
-		// if (rhit.fbSinglePhotoManager.author == rhit.fbAuthManager.uid) {
-		// 	document.querySelector("#menuEdit").style.display = "flex";
-		// 	document.querySelector("#menuDelete").style.display = "flex";
-		// }
 	}
 }
 
