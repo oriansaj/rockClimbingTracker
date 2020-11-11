@@ -3,7 +3,7 @@ body {
 }
 
 .navbar {
-    background-color: #800000;
+    background-color: #285bad;
     color: white;
 }
 
@@ -14,6 +14,7 @@ body {
 
 .card {
     margin: 10px 0;
+    border-radius: 50px;
 }
 
 #loginPage {
@@ -28,7 +29,7 @@ body {
 #menuBar {
     width: 100%;
     padding: 5px 20px;
-    background-color: #800000;
+    background-color: #285bad;
     color: white;
     position: fixed;
     bottom: 0;
@@ -54,6 +55,7 @@ body {
     left: -128px;
     will-change: top, left;
     width: max-content;
+    border-radius: 20px;
 }
 
 #routeViewMenu {
@@ -64,7 +66,7 @@ body {
     position: fixed;
     right: 10px;
     bottom: 60px;
-    background-color: #800000;
+    background-color: #285bad;
     color: white;
     z-index: 999;
 }
@@ -78,17 +80,17 @@ body {
 .form-control,
 .is-focused .custom-file-control,
 .is-focused .form-control {
-    background-image: linear-gradient(0deg, #800000 2px, rgba(0, 150, 136, 0) 0), linear-gradient(0deg, rgba(0, 0, 0, .26) 1px, transparent 0);
+    background-image: linear-gradient(0deg, #285bad 2px, rgba(0, 150, 136, 0) 0), linear-gradient(0deg, rgba(0, 0, 0, .26) 1px, transparent 0);
 }
 
 .is-focused [class*=" bmd-label"],
 .is-focused [class^=bmd-label] {
-    color: #800000;
+    color: #285bad;
 }
 
 #submitAddRoute,
 #submitEditRoute {
-    color: #800000;
+    color: #285bad;
 }
 
 .checkbox label {
@@ -97,13 +99,14 @@ body {
 
 /* .checkbox label input[type=checkbox]:checked+.checkbox-decorator .check,
 label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
-    color: #800000;
-    border-color: #800000;
+    color: #285bad;
+    border-color: #285bad;
 } */
 
 #map {
     height: 40vh;
     width: 70%;
+    border-radius: 20px;
 }
 
 #menuDelete {
@@ -115,4 +118,8 @@ label.checkbox-inline input[type=checkbox]:checked+.checkbox-decorator .check {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 100%;
     grid-column-gap: 30px;
+}
+
+.modal-content {
+    border-radius: 20px;
 }
