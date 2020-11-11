@@ -43,6 +43,7 @@ body {
     margin: 0 5vw;
     display: inline;
     font-size: 1rem;
+    cursor: pointer;
 }
 
 .card-title {

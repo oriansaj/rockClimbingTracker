@@ -79,6 +79,7 @@ rhit.FbAuthManager = class {
 	signOut() {
 		firebase.auth().signOut().then(() => {
 			console.log("You are now signed out");
+			window.location.href = "/";
 		}).catch((error) => {
 			// An error happened.
 			console.log("Sign out error");
@@ -147,7 +148,7 @@ rhit.ListPageController = class {
 			document.querySelector("#inputLat").value = "";
 			document.querySelector("#inputLong").value = "";
 		});
-		$("#addPhotoDialog").on("shown.bs.modal", (event) => {
+		$("#addRouteDialog").on("shown.bs.modal", (event) => {
 			document.querySelector("#inputName").focus();
 		});
 
