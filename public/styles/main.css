@@ -59,6 +59,14 @@ body {
     border-radius: 20px;
 }
 
+.dropdown-item {
+    border-radius: 20px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
 #routeViewMenu {
     left: -220px;
 }
