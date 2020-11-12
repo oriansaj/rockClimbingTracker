@@ -98,7 +98,8 @@ body {
 }
 
 #submitAddRoute,
-#submitEditRoute {
+#submitEditRoute,
+#submitDeleteRoute {
     color: #285bad;
 }
 

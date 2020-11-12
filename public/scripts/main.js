@@ -261,7 +261,9 @@ rhit.DetailPageController = class {
 			const startDate = document.querySelector("#inputStartDate").value;
 			const notes = document.querySelector("#inputNotes").value;
 			rhit.fbSingleRouteManager.addToMyRoutes(inProgress, startDate, notes, () => {
-				window.location.reload();
+				setTimeout(() => {
+					window.location.reload();
+				}, 100);
 			});
 		});
 
@@ -314,11 +316,11 @@ rhit.DetailPageController = class {
 			});
 		});
 
-		document.querySelector("#menuDelete").addEventListener("click", (event) => {
+		document.querySelector("#submitDeleteRoute").addEventListener("click", (event) => {
 			rhit.fbSingleRouteManager.delete(() => {
 				setTimeout(() => {
 					window.location.href = `/list.html?uid=${rhit.fbAuthManager.uid}`;
-				}, 100);
+				}, 300);
 			});
 		});
 
