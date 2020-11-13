@@ -396,6 +396,7 @@ rhit.FbSingleRouteManager = class {
 	}
 
 	update(name, difficulty, lat, long, inProgress, notes, startDate) {
+		let curName = rhit.fbSingleRouteManager.name;
 		this._ref.update({
 				[rhit.FB_KEY_NAME]: name,
 				[rhit.FB_KEY_DIFFICULTY]: difficulty,
@@ -410,14 +411,17 @@ rhit.FbSingleRouteManager = class {
 				console.error("Error updating document: ", error);
 			});
 		if (notes != null) {
-			let index = rhit.fbAuthManager.routes.indexOf(rhit.fbSingleRouteManager.name);
+			let index = rhit.fbAuthManager.routes.indexOf(curName);
+			let newRoutes = rhit.fbAuthManager.user.get(rhit.FB_KEY_ROUTES);
 			let newProgress = rhit.fbAuthManager.user.get(rhit.FB_KEY_IN_PROGRESS);
 			let newNotes = rhit.fbAuthManager.user.get(rhit.FB_KEY_NOTES);
 			let newStarts = rhit.fbAuthManager.user.get(rhit.FB_KEY_START_DATES);
+			newRoutes[index] = name;
 			newProgress[index] = inProgress;
 			newNotes[index] = notes;
 			newStarts[index] = startDate;
 			rhit.fbAuthManager.userRef.update({
+				[rhit.FB_KEY_ROUTES]: newRoutes,
 				[rhit.FB_KEY_IN_PROGRESS]: newProgress,
 				[rhit.FB_KEY_NOTES]: newNotes,
 				[rhit.FB_KEY_START_DATES]: newStarts
